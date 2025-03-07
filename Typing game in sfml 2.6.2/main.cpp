@@ -14,9 +14,9 @@ struct Word {
 
 class WordGame {
 private:
-    float spawnInterval = 1.0f;
+    float spawnInterval = 2.0f;
     float minSpawnInterval = 0.6f;
-    float spawnAcceleration = 0.95f; // 5% faster each spawn
+    float spawnAcceleration = 0.96f; // 4% faster each spawn
     sf::RenderWindow window;
     sf::Font font;
     vector<Word> activeWords;
