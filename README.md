@@ -1,0 +1,1 @@
+# Typing game in sfml 2.6.2
