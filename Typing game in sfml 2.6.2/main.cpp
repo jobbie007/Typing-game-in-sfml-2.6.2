@@ -61,7 +61,7 @@ private:
         "road", "sometimes", "support", "view", "fire", "says", "hard", "morning", "table", "left", "situation", "try", "outside", "lines", "surface", "ask", "modern", "top", "peace"
     };
 
-     string generateWord() {
+    string generateWord() {
         set<char> usedChars;
         for (const auto& word : activeWords)
             usedChars.insert(static_cast<char>(tolower(word.text[0])));
@@ -75,8 +75,8 @@ private:
 
         if (candidates.empty()) return "";
         //int randomIndex = rand() % candidates.size();
-          static mt19937 rng(random_device{}());
-          uniform_int_distribution<size_t> dist(0, candidates.size() - 1);
+        static mt19937 rng(random_device{}());
+        uniform_int_distribution<size_t> dist(0, candidates.size() - 1);
         return candidates[dist(rng)];
     }
 
@@ -86,9 +86,9 @@ private:
             if (!gridCells[i]) freeCells.push_back(i);
 
         if (!freeCells.empty()) {
-           // static mt19937 rng(random_device{}());
-           // uniform_int_distribution<size_t> dist(0, freeCells.size() - 1);
-			int randomCell = rand() % freeCells.size();
+            // static mt19937 rng(random_device{}());
+            // uniform_int_distribution<size_t> dist(0, freeCells.size() - 1);
+            int randomCell = rand() % freeCells.size();
             int cell = freeCells[randomCell];
 
             string newWord = generateWord();
@@ -137,7 +137,7 @@ private:
                     else {
                         errorGridIndex = targetWord.gridIndex;
                         errorTimer.restart();
-						wrongInput();
+                        wrongInput();
                         resetInput();
                     }
                 }
@@ -158,11 +158,11 @@ private:
     void wrongInput() {
 
 
-		score -= 5;
+        score -= 5;
     }
 
 public:
-    WordGame() : window(sf::VideoMode(800, 900), "Word Game") {
+    WordGame() : window(sf::VideoMode(600, 700), "Word Game") {
         if (!font.loadFromFile("arial.ttf")) {
             throw std::runtime_error("Failed to load font");
         }
@@ -216,7 +216,7 @@ private:
         window.clear(sf::Color(0, 0, 0));
 
         // Draw grid
-        const float cellSize = 266.66f;
+        const float cellSize = 200.0f;
         for (int i = 0; i < 9; i++) {
             int row = i / 3;
             int col = i % 3;
@@ -235,7 +235,7 @@ private:
                 errorHighlight.setFillColor(sf::Color(255, 0, 0, 150));
                 window.draw(errorHighlight);
             }
-        
+
         }
 
         // Draw words
@@ -263,19 +263,19 @@ private:
 
         // Draw current input
         sf::Text inputText("Input: " + currentInput, font, 32);
-        inputText.setPosition(10, 810);
+        inputText.setPosition(10, 610);
         inputText.setFillColor(sf::Color::White);
         window.draw(inputText);
 
         // Draw score
         sf::Text scoreText("Score: " + std::to_string(score), font, 32);
-        scoreText.setPosition(600, 810);
+        scoreText.setPosition(400, 610);
         scoreText.setFillColor(sf::Color::White);
         window.draw(scoreText);
 
         if (gameOver) {
             sf::Text gameOverText("Game Over!", font, 64);
-            gameOverText.setPosition(250, 400);
+            gameOverText.setPosition(150, 300);
             gameOverText.setFillColor(sf::Color::Red);
             window.draw(gameOverText);
         }
