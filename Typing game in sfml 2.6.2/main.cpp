@@ -15,8 +15,9 @@ struct Word {
 class WordGame {
 private:
     float spawnInterval = 2.0f;
-    float minSpawnInterval = 0.6f;
+    float minSpawnInterval = 0.55f;
     float spawnAcceleration = 0.96f; // 4% faster each spawn
+    float speed;
     sf::RenderWindow window;
     sf::Font font;
     vector<Word> activeWords;
@@ -97,6 +98,7 @@ private:
                 activeWords.push_back({ newWord, cell });
 
                 spawnInterval = max(minSpawnInterval, spawnInterval * spawnAcceleration);
+                speed = spawnInterval;
             }
         }
     }
@@ -193,8 +195,26 @@ private:
         }
     }
 
+    void restartGame() {
+        score = 0;
+        gameOver = false;
+        activeWords.clear();
+        gridCells.fill(false);
+        spawnClock.restart();
+        currentInput.clear();
+        targetStartChar = '\0';
+		spawnInterval = 2.0f;
+		speed = spawnInterval;
+    }
+
     void update() {
-        if (gameOver) return;
+        if (gameOver) {
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
+                restartGame();
+
+                return;
+            }
+        }
 
         // Spawn new words based on time
         if (spawnClock.getElapsedTime().asSeconds() > spawnInterval) {
@@ -273,10 +293,26 @@ private:
         scoreText.setFillColor(sf::Color::White);
         window.draw(scoreText);
 
+        // Draw speed
+        sf::Text speedText("Speed: " + std::to_string(speed)+ "s", font, 12);
+        speedText.setPosition(200, 630);
+        speedText.setFillColor(sf::Color::White);
+        window.draw(speedText);
+
         if (gameOver) {
-            sf::Text gameOverText("Game Over!", font, 64);
-            gameOverText.setPosition(150, 300);
+            sf::Text gameOverText("Game Over! Press R to restart", font, 37);
+            gameOverText.setPosition(40, 300);
             gameOverText.setFillColor(sf::Color::Red);
+            gameOverText.setStyle(sf::Text::Bold);
+
+            sf::FloatRect textBounds = gameOverText.getLocalBounds();
+            sf::RectangleShape backgroundRect;
+            backgroundRect.setSize(sf::Vector2f(textBounds.width + 20, textBounds.height + 20)); // Add padding
+            backgroundRect.setPosition(gameOverText.getPosition().x , gameOverText.getPosition().y); // Position rectangle slightly offset
+            backgroundRect.setFillColor(sf::Color::Black); // Set the color of the rectangle
+
+            // Draw the background rectangle first
+            window.draw(backgroundRect);
             window.draw(gameOverText);
         }
 
