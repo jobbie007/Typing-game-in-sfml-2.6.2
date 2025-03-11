@@ -4,6 +4,8 @@
 #include <array>
 #include <set>
 #include <random>
+//#include <nlohmann/json.hpp>
+
 
 using namespace std;
 struct Word {
@@ -14,10 +16,11 @@ struct Word {
 
 class WordGame {
 private:
+    const float MAX_SPAWN_INTERVAL = 2.0f;
     float spawnInterval = 2.0f;
     float minSpawnInterval = 0.55f;
     float spawnAcceleration = 0.96f; // 4% faster each spawn
-    float speed;
+    float speed=spawnInterval;
     sf::RenderWindow window;
     sf::Font font;
     vector<Word> activeWords;
@@ -158,12 +161,38 @@ private:
     }
 
     void wrongInput() {
-
-
         score -= 5;
     }
 
 public:
+    void drawSpeedBar() {
+        const float barWidth = 300.0f; // Total width of the speed bar
+        const float barHeight = 20.0f;  // Height of the speed bar
+
+        // Calculate the width based on current speed and maximum speed
+		float speedRange = MAX_SPAWN_INTERVAL - minSpawnInterval; // Range of speed values
+        float normalizedSpeed = speed - minSpawnInterval;        // Normalized current speed
+
+        // Ensure we don't go below 0 or above the range
+        normalizedSpeed = std::max(0.0f, std::min(normalizedSpeed, speedRange));
+
+        // Calculate the fill width
+        float fillWidth = (1.0f - (normalizedSpeed / speedRange)) *  barWidth;
+
+
+        // Background bar
+        sf::RectangleShape backgroundBar(sf::Vector2f(barWidth, barHeight));
+        backgroundBar.setPosition(10, 650); // Positioning the bar
+        backgroundBar.setFillColor(sf::Color(150, 150, 150)); // Gray background
+        window.draw(backgroundBar);
+
+        // Fill bar
+        sf::RectangleShape fillBar(sf::Vector2f(fillWidth, barHeight));
+        fillBar.setPosition(10, 650); // Same position as background
+        fillBar.setFillColor(sf::Color(30, 255, 0)); // Green color for fill
+        window.draw(fillBar);
+    }
+
     WordGame() : window(sf::VideoMode(600, 700), "Word Game") {
         if (!font.loadFromFile("arial.ttf")) {
             throw std::runtime_error("Failed to load font");
@@ -249,6 +278,8 @@ private:
             window.draw(cell);
 
 
+			drawSpeedBar(); 
+
             if (i == errorGridIndex && errorTimer.getElapsedTime().asSeconds() < ERROR_DURATION) {
                 sf::RectangleShape errorHighlight(sf::Vector2f(cellSize - 4, cellSize - 4));
                 errorHighlight.setPosition(col * cellSize + 2, row * cellSize + 2);
@@ -295,7 +326,7 @@ private:
 
         // Draw speed
         sf::Text speedText("Speed: " + std::to_string(speed)+ "s", font, 12);
-        speedText.setPosition(200, 630);
+        speedText.setPosition(20, 652);
         speedText.setFillColor(sf::Color::White);
         window.draw(speedText);
 
@@ -319,6 +350,8 @@ private:
         window.display();
     }
 };
+
+
 
 int main() {
     try {
